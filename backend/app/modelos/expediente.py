@@ -1,0 +1,1 @@
+"""Entidades Expediente y Diagnostico."""
