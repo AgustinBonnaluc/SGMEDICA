@@ -2,7 +2,7 @@
 from datetime import datetime
 
 from app.excepciones import NoEncontradoError, ReglaDeNegocioError
-from app.modelos import Cita, Medico
+from app.modelos import Cita, Medico, Usuario
 from app.repositorios.interfaces import IRepositorioCitas, IRepositorioUsuarios
 
 
@@ -29,8 +29,10 @@ class ServicioCitas:
         cita.cancelar()
         return self._repositorio.guardar(cita)
 
-    def listar_por_paciente(self, paciente_id: int) -> list[Cita]:
-        return self._repositorio.listar_por_paciente(paciente_id)
+    def listar_citas(self, usuario: Usuario) -> list[Cita]:
+        if isinstance(usuario, Medico):
+            return self._repositorio.listar_por_medico(usuario.id)
+        return self._repositorio.listar_por_paciente(usuario.id)
 
     def _buscar_cita(self, cita_id: int, usuario_id: int) -> Cita:
         """Devuelve la cita solo si el usuario participa en ella."""

@@ -21,3 +21,7 @@ class RepositorioCitasPostgres(IRepositorioCitas):
     def listar_por_paciente(self, paciente_id: int) -> list[Cita]:
         consulta = select(Cita).where(Cita.paciente_id == paciente_id).order_by(Cita.fecha)
         return list(self._sesion.scalars(consulta))
+
+    def listar_por_medico(self, medico_id: int) -> list[Cita]:
+        consulta = select(Cita).where(Cita.medico_id == medico_id).order_by(Cita.fecha)
+        return list(self._sesion.scalars(consulta))

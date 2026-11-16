@@ -1,8 +1,16 @@
 """Endpoints de autenticación."""
 from fastapi import APIRouter, Depends
 
-from app.api.schemas import Credenciales, MedicoNuevo, PacienteNuevo, Token, UsuarioSalida
-from app.dependencias import obtener_servicio_auth
+from app.api.schemas import (
+    Credenciales,
+    MedicoNuevo,
+    MedicoSalida,
+    PacienteNuevo,
+    Token,
+    UsuarioSalida,
+)
+from app.dependencias import obtener_servicio_auth, usuario_actual
+from app.modelos import Usuario
 from app.servicios.servicio_auth import ServicioAuth
 
 router = APIRouter(tags=["Autenticación"])
@@ -21,3 +29,16 @@ def registrar_medico(datos: MedicoNuevo, servicio: ServicioAuth = Depends(obtene
 @router.post("/login", response_model=Token)
 def login(datos: Credenciales, servicio: ServicioAuth = Depends(obtener_servicio_auth)):
     return Token(access_token=servicio.login(datos.email, datos.password))
+
+
+@router.get("/yo", response_model=UsuarioSalida)
+def obtener_usuario_actual(usuario: Usuario = Depends(usuario_actual)):
+    return usuario
+
+
+@router.get("/medicos", response_model=list[MedicoSalida])
+def listar_medicos(
+    usuario: Usuario = Depends(usuario_actual),
+    servicio: ServicioAuth = Depends(obtener_servicio_auth),
+):
+    return servicio.listar_medicos()

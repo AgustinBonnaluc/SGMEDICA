@@ -2,7 +2,7 @@
 from datetime import datetime
 
 from sqlalchemy import DateTime, ForeignKey, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.base_datos import Base
 from app.excepciones import ReglaDeNegocioError
@@ -20,6 +20,9 @@ class Cita(Base):
     medico_id: Mapped[int] = mapped_column(ForeignKey("usuarios.id"))
     fecha: Mapped[datetime] = mapped_column(DateTime)
     estado: Mapped[str] = mapped_column(String(20))
+
+    paciente: Mapped["Paciente"] = relationship(foreign_keys=[paciente_id])
+    medico: Mapped["Medico"] = relationship(foreign_keys=[medico_id])
 
     def __init__(self, paciente_id: int, medico_id: int, fecha: datetime):
         # Toda cita nace pendiente

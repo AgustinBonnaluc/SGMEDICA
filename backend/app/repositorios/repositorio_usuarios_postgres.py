@@ -2,7 +2,7 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.modelos import Usuario
+from app.modelos import Medico, Usuario
 from app.repositorios.interfaces import IRepositorioUsuarios
 
 
@@ -20,3 +20,6 @@ class RepositorioUsuariosPostgres(IRepositorioUsuarios):
 
     def buscar_por_email(self, email: str) -> Usuario | None:
         return self._sesion.scalar(select(Usuario).where(Usuario.email == email))
+
+    def listar_medicos(self) -> list[Medico]:
+        return list(self._sesion.scalars(select(Medico).order_by(Medico.nombre)))

@@ -58,6 +58,9 @@ class ServicioAuth:
             raise CredencialesInvalidasError("Token inválido o vencido")
         return usuario
 
+    def listar_medicos(self) -> list[Medico]:
+        return self._repositorio.listar_medicos()
+
     def _validar_email_libre(self, email: str) -> None:
         if self._repositorio.buscar_por_email(email) is not None:
             raise ReglaDeNegocioError("Ya existe un usuario con ese email")

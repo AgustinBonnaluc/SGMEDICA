@@ -1,7 +1,7 @@
 """Interfaces de los repositorios."""
 from abc import ABC, abstractmethod
 
-from app.modelos import Cita, Expediente, MetricaSalud, Usuario
+from app.modelos import Cita, Expediente, Medico, MetricaSalud, Usuario
 
 
 class IRepositorioUsuarios(ABC):
@@ -14,6 +14,9 @@ class IRepositorioUsuarios(ABC):
     @abstractmethod
     def buscar_por_email(self, email: str) -> Usuario | None: ...
 
+    @abstractmethod
+    def listar_medicos(self) -> list[Medico]: ...
+
 
 class IRepositorioCitas(ABC):
     @abstractmethod
@@ -24,6 +27,9 @@ class IRepositorioCitas(ABC):
 
     @abstractmethod
     def listar_por_paciente(self, paciente_id: int) -> list[Cita]: ...
+
+    @abstractmethod
+    def listar_por_medico(self, medico_id: int) -> list[Cita]: ...
 
 
 class IRepositorioExpedientes(ABC):

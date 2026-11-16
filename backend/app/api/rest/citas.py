@@ -20,10 +20,10 @@ def agendar_cita(
 
 @router.get("", response_model=list[CitaSalida])
 def listar_mis_citas(
-    paciente: Paciente = Depends(paciente_actual),
+    usuario: Usuario = Depends(usuario_actual),
     servicio: ServicioCitas = Depends(obtener_servicio_citas),
 ):
-    return servicio.listar_por_paciente(paciente.id)
+    return servicio.listar_citas(usuario)
 
 
 @router.post("/{cita_id}/confirmar", response_model=CitaSalida)

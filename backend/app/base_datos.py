@@ -9,7 +9,8 @@ engine = create_engine(POSTGRES_URL)
 # expire_on_commit=False: los objetos se pueden seguir leyendo después de guardar
 SesionLocal = sessionmaker(bind=engine, expire_on_commit=False)
 
-coleccion_metricas = MongoClient(MONGO_URL)["sgmedica"]["metricas_salud"]
+# tz_aware=True: las fechas vuelven en UTC con su zona horaria
+coleccion_metricas = MongoClient(MONGO_URL, tz_aware=True)["sgmedica"]["metricas_salud"]
 
 
 class Base(DeclarativeBase):
