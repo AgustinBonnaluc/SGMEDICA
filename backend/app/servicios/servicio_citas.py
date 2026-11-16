@@ -17,6 +17,9 @@ class ServicioCitas:
         medico = self._repositorio_usuarios.buscar_por_id(medico_id)
         if not isinstance(medico, Medico):
             raise NoEncontradoError("El médico no existe")
+        citas_del_medico = self._repositorio.listar_por_medico(medico_id)
+        if any(cita.se_superpone_con(fecha) for cita in citas_del_medico):
+            raise ReglaDeNegocioError("El médico ya tiene una cita en ese horario")
         return self._repositorio.guardar(Cita(paciente_id, medico_id, fecha))
 
     def confirmar_cita(self, cita_id: int, usuario_id: int) -> Cita:

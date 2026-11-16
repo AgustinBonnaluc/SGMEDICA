@@ -1,5 +1,5 @@
 """Entidad Cita."""
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from sqlalchemy import DateTime, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -14,6 +14,7 @@ class Cita(Base):
     PENDIENTE = "pendiente"
     CONFIRMADA = "confirmada"
     CANCELADA = "cancelada"
+    DURACION = timedelta(minutes=30)
 
     id: Mapped[int] = mapped_column(primary_key=True)
     paciente_id: Mapped[int] = mapped_column(ForeignKey("usuarios.id"))
@@ -29,6 +30,10 @@ class Cita(Base):
         super().__init__(
             paciente_id=paciente_id, medico_id=medico_id, fecha=fecha, estado=self.PENDIENTE
         )
+
+    def se_superpone_con(self, fecha: datetime) -> bool:
+        """Indica si esta cita ocupa el horario pedido. Las canceladas lo liberan."""
+        return self.estado != self.CANCELADA and abs(self.fecha - fecha) < self.DURACION
 
     def confirmar(self) -> None:
         if self.estado != self.PENDIENTE:

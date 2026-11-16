@@ -18,6 +18,7 @@ FECHA_FUTURA = datetime.now() + timedelta(days=1)
 def repositorio():
     repositorio = Mock(spec=IRepositorioCitas)
     repositorio.guardar.side_effect = lambda cita: cita
+    repositorio.listar_por_medico.return_value = []
     return repositorio
 
 
@@ -57,6 +58,34 @@ def test_agendar_rechaza_un_medico_inexistente(servicio, repositorio, repositori
         servicio.agendar_cita(PACIENTE_ID, MEDICO_ID, FECHA_FUTURA)
 
     repositorio.guardar.assert_not_called()
+
+
+def test_agendar_rechaza_un_horario_ocupado(servicio, repositorio):
+    repositorio.listar_por_medico.return_value = [Cita(99, MEDICO_ID, FECHA_FUTURA)]
+    diez_minutos_despues = FECHA_FUTURA + timedelta(minutes=10)
+
+    with pytest.raises(ReglaDeNegocioError):
+        servicio.agendar_cita(PACIENTE_ID, MEDICO_ID, diez_minutos_despues)
+
+    repositorio.guardar.assert_not_called()
+
+
+def test_agendar_permite_el_turno_siguiente(servicio, repositorio):
+    repositorio.listar_por_medico.return_value = [Cita(99, MEDICO_ID, FECHA_FUTURA)]
+
+    cita = servicio.agendar_cita(PACIENTE_ID, MEDICO_ID, FECHA_FUTURA + Cita.DURACION)
+
+    assert cita.estado == Cita.PENDIENTE
+
+
+def test_agendar_permite_el_horario_de_una_cita_cancelada(servicio, repositorio):
+    cancelada = Cita(99, MEDICO_ID, FECHA_FUTURA)
+    cancelada.cancelar()
+    repositorio.listar_por_medico.return_value = [cancelada]
+
+    cita = servicio.agendar_cita(PACIENTE_ID, MEDICO_ID, FECHA_FUTURA)
+
+    assert cita.estado == Cita.PENDIENTE
 
 
 def test_confirmar_cambia_el_estado_a_confirmada(servicio, repositorio):
