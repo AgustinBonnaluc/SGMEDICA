@@ -17,7 +17,7 @@ REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
 CANAL_METRICAS = "metricas_salud"
 SEGUNDOS_ENTRE_METRICAS = 2
 RANGOS = {
-    "pulso": (55, 130),
+    "pulso": (110, 140), #cambio de rango para mostrar las alertas en la demo
     "presion_sistolica": (100, 160),
     "presion_diastolica": (60, 100),
 }
