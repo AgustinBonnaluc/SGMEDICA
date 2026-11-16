@@ -15,3 +15,7 @@ class NoEncontradoError(ErrorDeNegocio):
 
 class CredencialesInvalidasError(ErrorDeNegocio):
     """El login o el token no son válidos."""
+
+
+class AccesoDenegadoError(ErrorDeNegocio):
+    """El usuario no tiene permiso sobre el recurso."""

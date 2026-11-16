@@ -1,9 +1,9 @@
 """Endpoints de expedientes y diagnósticos."""
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
 from app.api.schemas import DiagnosticoNuevo, ExpedienteSalida
 from app.dependencias import medico_actual, obtener_servicio_expedientes, usuario_actual
-from app.modelos import Medico, Paciente, Usuario
+from app.modelos import Medico, Usuario
 from app.servicios.servicio_expedientes import ServicioExpedientes
 
 router = APIRouter(prefix="/expedientes", tags=["Expedientes"])
@@ -15,10 +15,7 @@ def obtener_expediente(
     usuario: Usuario = Depends(usuario_actual),
     servicio: ServicioExpedientes = Depends(obtener_servicio_expedientes),
 ):
-    # Un paciente solo puede ver su propio expediente
-    if isinstance(usuario, Paciente) and usuario.id != paciente_id:
-        raise HTTPException(status_code=403, detail="No se puede ver el expediente de otro paciente")
-    return servicio.obtener_expediente(paciente_id)
+    return servicio.obtener_expediente(paciente_id, usuario)
 
 
 @router.post("/{paciente_id}/diagnosticos", response_model=ExpedienteSalida, status_code=201)

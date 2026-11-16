@@ -3,10 +3,11 @@ from fastapi import Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
-from app.base_datos import SesionLocal
+from app.base_datos import SesionLocal, coleccion_metricas
 from app.modelos import Medico, Paciente, Usuario
 from app.repositorios.repositorio_citas_postgres import RepositorioCitasPostgres
 from app.repositorios.repositorio_expedientes_postgres import RepositorioExpedientesPostgres
+from app.repositorios.repositorio_metricas_mongo import RepositorioMetricasMongo
 from app.repositorios.repositorio_usuarios_postgres import RepositorioUsuariosPostgres
 from app.servicios.servicio_auth import ServicioAuth
 from app.servicios.servicio_citas import ServicioCitas
@@ -27,7 +28,9 @@ def obtener_servicio_citas(sesion: Session = Depends(obtener_sesion)) -> Servici
 
 
 def obtener_servicio_expedientes(sesion: Session = Depends(obtener_sesion)) -> ServicioExpedientes:
-    return ServicioExpedientes(RepositorioExpedientesPostgres(sesion))
+    return ServicioExpedientes(
+        RepositorioExpedientesPostgres(sesion), RepositorioMetricasMongo(coleccion_metricas)
+    )
 
 
 def usuario_actual(
