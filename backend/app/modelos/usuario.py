@@ -1,8 +1,9 @@
 """Entidades Usuario, Paciente y Medico."""
 from datetime import date
 
+import bcrypt
 from sqlalchemy import Date, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.base_datos import Base
 
@@ -20,12 +21,20 @@ class Usuario(Base):
     password_hash: Mapped[str] = mapped_column(String(255))
     rol: Mapped[str] = mapped_column(String(20))
 
+    @staticmethod
+    def hashear_password(password: str) -> str:
+        return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+
+    def autenticar(self, password: str) -> bool:
+        return bcrypt.checkpw(password.encode(), self.password_hash.encode())
+
 
 class Paciente(Usuario):
     __mapper_args__ = {"polymorphic_identity": "paciente"}
 
     # Opcional en la tabla porque los médicos comparten la misma tabla
     fecha_nacimiento: Mapped[date | None] = mapped_column(Date)
+    expediente: Mapped["Expediente"] = relationship()
 
     def obtener_edad(self) -> int:
         hoy = date.today()
